@@ -1,6 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
 
 import logger from "./middlewares/logger";
+import { initDb } from "./config/db";
+import { AuthRoutes } from "./modules/auth/auth.routes";
+import { VehicleRoutes } from "./modules/vehicle/vehicle.routes";
 
 const app = express();
 
@@ -9,6 +12,16 @@ app.use(express.json());
 app.get("/", logger, (req: Request, res: Response) => {
   res.send("Hello World!");
 });
+
+// initDb();
+
+initDb()
+  .then(() => console.log("DB initialized"))
+  .catch(console.error);
+
+//  API Routes
+app.use("/api/v1/auth", AuthRoutes);
+app.use("/api/v1/vehicles", VehicleRoutes);
 
 // Api Not Found
 app.use((req, res) => {
