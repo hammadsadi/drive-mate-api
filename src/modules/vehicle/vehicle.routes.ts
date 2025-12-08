@@ -4,6 +4,10 @@ import auth from "../../middlewares/auth";
 
 const route = Router();
 
-route.post("/", auth(), vehicleController.createVehicle);
+route.post("/", auth("admin"), vehicleController.createVehicle);
+route.get("/", vehicleController.getAllVehicles);
+route.get("/:vehicleId", vehicleController.getVehicleById);
+route.put("/:vehicleId", auth("admin"), vehicleController.updateVehicleById);
+route.delete("/:vehicleId", auth("admin"), vehicleController.deleteVehicleById);
 
 export const VehicleRoutes = route;

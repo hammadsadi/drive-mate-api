@@ -32,12 +32,20 @@ export const initDb = async () => {
   `);
 
   await pool.query(`
+    DO $$ BEGIN
+      CREATE TYPE vehicle_type AS ENUM ('car', 'bike', 'van', 'SUV');
+    EXCEPTION
+      WHEN duplicate_object THEN null;
+    END $$;
+  `);
+
+  await pool.query(`
       CREATE TABLE IF NOT EXISTS users(
       id SERIAL PRIMARY KEY,
-      name VARCHAR(255),
+      name VARCHAR(255) NOT NULL,
       email VARCHAR(255) UNIQUE NOT NULL CHECK (email = LOWER(email)),
       password TEXT NOT NULL CHECK (LENGTH (password) >= 6),
-      role user_role DEFAULT 'customer',
+      role user_role DEFAULT 'customer' NOT NULL,
       phone VARCHAR(255) NOT NULL,
       createdAT TIMESTAMP DEFAULT NOW(),
       updatedAT TIMESTAMP DEFAULT NOW()
@@ -48,8 +56,8 @@ export const initDb = async () => {
       CREATE TABLE IF NOT EXISTS vehicles(
       id SERIAL PRIMARY KEY,
       vehicle_name TEXT NOT NULL,
-      type VARCHAR(255),
-      registration_number INT NOT NULL UNIQUE,
+      type vehicle_type NOT NULL,
+      registration_number TEXT NOT NULL UNIQUE,
       daily_rent_price INT NOT NULL CHECK (daily_rent_price > 0) ,
       availability_status availability_status NOT NULL DEFAULT 'available',
       createdAT TIMESTAMP DEFAULT NOW(),
