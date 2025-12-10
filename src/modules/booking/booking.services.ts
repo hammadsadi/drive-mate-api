@@ -72,22 +72,24 @@ const createBooking = async (payload: Record<string, unknown>) => {
 
 const getAllBooking = async (userInfo: JwtPayload) => {
   const expired = await pool.query(`
-  UPDATE bookings
-  SET status = 'returned'
-  WHERE status = 'active'
-  AND rent_end_date < CURRENT_DATE
-  RETURNING vehicle_id
-`);
+    UPDATE bookings
+    SET status = 'returned'
+    WHERE status = 'active'
+    AND rent_end_date < CURRENT_DATE
+    RETURNING vehicle_id
+  `);
 
   if (expired.rows.length > 0) {
-    await pool.query(
-      `
-    UPDATE vehicles
-    SET availability_status = 'available'
-    WHERE id = $1
-  `,
-      [expired.rows[0].vehicle_id]
-    );
+    for (const item of expired.rows) {
+      await pool.query(
+        `
+        UPDATE vehicles
+        SET availability_status = 'available'
+        WHERE id = $1
+        `,
+        [item.vehicle_id]
+      );
+    }
   }
 
   let result;
