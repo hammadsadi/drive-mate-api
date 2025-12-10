@@ -5,6 +5,7 @@ import { initDb } from "./config/db";
 import { AuthRoutes } from "./modules/auth/auth.routes";
 import { VehicleRoutes } from "./modules/vehicle/vehicle.routes";
 import { UserRoutes } from "./modules/user/user.routes";
+import { BookingRoutes } from "./modules/booking/booking.routes";
 
 const app = express();
 
@@ -24,6 +25,7 @@ initDb()
 app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/vehicles", VehicleRoutes);
 app.use("/api/v1/users", UserRoutes);
+app.use("/api/v1/bookings", BookingRoutes);
 
 // Api Not Found
 app.use((req, res) => {
